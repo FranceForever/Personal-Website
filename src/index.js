@@ -17,6 +17,10 @@ import vhdlLogo from './logos/microchip-solid.png';
 import hdfcErgoLogo from './logos/hdfcergo_logo.jpeg'; // Placeholder image
 import nowFloatsLogo from './logos/nowfloats_logo.png'; // Placeholder image
 
+// Import FontAwesome Logos
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faLaptopCode, faBriefcase, faProjectDiagram, faCertificate, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
+
 // Define the theme colors
 const theme = {
   light: {
@@ -54,10 +58,50 @@ const App = () => {
   return (
     <ThemeProvider theme={darkMode ? theme.dark : theme.light}>
       <PageContainer>
-        <Header darkMode={darkMode}>
+      <Header>
+          <HeaderButtonContainer>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#about">
+                <FontAwesomeIcon icon={faUser} size="2x" />
+              </HeaderButton>
+              <TooltipLeft>About</TooltipLeft>
+            </HeaderButtonWrapper>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#skills">
+                <FontAwesomeIcon icon={faLaptopCode} size="2x" />
+              </HeaderButton>
+              <TooltipLeft>Skills</TooltipLeft>
+            </HeaderButtonWrapper>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#experience">
+                <FontAwesomeIcon icon={faBriefcase} size="2x" />
+              </HeaderButton>
+              <TooltipLeft>Experience</TooltipLeft>
+            </HeaderButtonWrapper>
+          </HeaderButtonContainer>
           <ToggleSwitch onClick={toggleDarkMode}>
             {darkMode ? 'Light Mode' : 'Dark Mode'}
           </ToggleSwitch>
+          <HeaderButtonContainer right>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#projects">
+                <FontAwesomeIcon icon={faProjectDiagram} size="2x" />
+              </HeaderButton>
+              <TooltipRight>Projects</TooltipRight>
+            </HeaderButtonWrapper>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#certifications">
+                <FontAwesomeIcon icon={faCertificate} size="2x" />
+              </HeaderButton>
+              <TooltipRight>Certifications</TooltipRight>
+            </HeaderButtonWrapper>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#education">
+                <FontAwesomeIcon icon={faGraduationCap} size="2x" />
+              </HeaderButton>
+              <TooltipRight>Education</TooltipRight>
+            </HeaderButtonWrapper>
+          </HeaderButtonContainer>
         </Header>
         <Main>
           <Section id="about" title="About Me">
@@ -161,6 +205,7 @@ const PageContainer = styled.div`
   min-height: 100vh;
   animation: ${fadeIn} 1s ease-in-out;
   text-align: center;
+  scroll-behavior: smooth; /* Enable smooth scrolling */
 `;
 
 const Header = styled.header`
@@ -168,11 +213,127 @@ const Header = styled.header`
   background-size: cover;
   background-position: center;
   height: 100vh; /* Adjust the height to cover the entire window */
-  width: 100vw; /* Adjust the width to cover the entire window */
+  width: 100wh; /* Adjust the width to cover the entire window */
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
+  position: relative; /* Make sure the position is relative to allow overlay */
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Black overlay with 50% transparency */
+    z-index: 1;
+  }
+
+  /* Ensure the content is above the overlay */
+  & > * {
+    position: relative;
+    z-index: 2;
+  }
+`;
+
+const HeaderButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: absolute;
+  top: ${({ right }) => (right ? 'auto' : '20px')};
+  bottom: ${({ right }) => (right ? '20px' : 'auto')};
+  left: ${({ right }) => (right ? 'auto' : '20px')};
+  right: ${({ right }) => (right ? '20px' : 'auto')};
+  height: auto; /* Adjust as needed */
+`;
+
+const HeaderButton = styled.a`
+  width: 90px;
+  height: 90px;
+  background-color: ${({ theme }) => theme.buttonBackground};
+  border-radius: 50%;
+  margin: 15px 0;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: ${({ theme }) => theme.text}; /* Text color */
+  transition: transform 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    transform: scale(1.1) translateY(-5px); /* Add a hover effect */
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3); /* Enhance the shadow for a 3D effect */
+  }
+`;
+
+const TooltipLeft = styled.div`
+  visibility: hidden;
+  width: 120px;
+  background-color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.primary};
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  left: 125%; /* Position to the right of the button */
+  top: 50%;
+  margin-top: -15px;
+  opacity: 0;
+  transition: opacity 0.3s;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -5px;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent ${({ theme }) => theme.text} transparent transparent;
+  }
+`;
+
+const TooltipRight = styled.div`
+  visibility: hidden;
+  width: 120px;
+  background-color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.primary};
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  right: 125%; /* Position to the left of the button */
+  top: 50%;
+  margin-top: -15px;
+  opacity: 0;
+  transition: opacity 0.3s;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -5px;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent ${({ theme }) => theme.text};
+  }
+`;
+
+const HeaderButtonWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+
+  &:hover ${TooltipLeft}, &:hover ${TooltipRight} {
+    visibility: visible;
+    opacity: 1;
+  }
 `;
 
 const Main = styled.main`
