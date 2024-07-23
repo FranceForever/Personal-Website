@@ -1,0 +1,113 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+header, nav, section, footer {
+  transition: background-color 0.5s, color 0.5s;
+}
+
+header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+
+header h1 {
+  margin: 0;
+}
+
+nav {
+  text-align: center;
+  padding: 10px;
+}
+
+nav a {
+  text-decoration: none;
+  margin: 0 15px;
+  transition: color 0.5s;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Add space above the About Me section
+#about {
+  padding-top: 50px; /* Adjust the space as needed
+}
+
+/* Add space below the profile photo
+img {
+  display: block;
+  margin-bottom: 20px; /* Adjust the space as needed
+} */
+
+section {
+  padding: 20px;
+  margin: 0 auto; /* Center the content */
+}
+
+.card {
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.5s, color 0.5s;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid #ccc;
+}
+
+.contact-info {
+  margin-top: 20px;
+}
+
+.contact-info a {
+  text-decoration: none;
+  transition: color 0.5s;
+}
+
+/* Light mode styles */
+.light-mode {
+  background-color: #f0f0f0;
+  color: #121212;
+}
+
+.light-mode header, .light-mode nav, .light-mode section, .light-mode footer {
+  background-color: #ffffff;
+  color: #121212;
+}
+
+.light-mode nav a, .light-mode .contact-info a {
+  color: #121212;
+}
+
+.light-mode .card {
+  background-color: #ffffff;
+  color: #121212;
+}
+
+/* Dark mode styles */
+.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.dark-mode header, .dark-mode nav, .dark-mode section, .dark-mode footer {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+}
+
+.dark-mode nav a, .dark-mode .contact-info a {
+  color: #e0e0e0;
+}
+
+.dark-mode .card {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+}
+
