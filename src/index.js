@@ -14,8 +14,8 @@ import kotlinLogo from './logos/android.png';
 import vhdlLogo from './logos/microchip-solid.png';
 
 // Import job images
-import hdfcErgoLogo from './logos/hdfcergo_logo.jpeg'; // Placeholder image
-import nowFloatsLogo from './logos/nowfloats_logo.png'; // Placeholder image
+import hdfcErgoLogo from './logos/hdfcergo_logo.jpeg';
+import nowFloatsLogo from './logos/nowfloats_logo.png';
 
 // Import FontAwesome Logos
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,18 +24,18 @@ import { faUser, faLaptopCode, faBriefcase, faProjectDiagram, faCertificate, faG
 // Define the theme colors
 const theme = {
   light: {
-    background: '#e1f5fe', // Light sky blue
-    primary: '#ffffff', // White
+    background: '#ffffff', // White
+    primary: '#f0f0f0', // Light gray
     text: '#000000', // Black for text
-    buttonBackground: '#64b5f6', // Bright blue for buttons
-    buttonHover: '#42a5f5', // Darker bright blue for button hover
+    buttonBackground: '#66ccff', // Light blue for buttons
+    buttonHover: '#3399ff', // Darker light blue for button hover
   },
   dark: {
-    background: '#263238', // Dark mode background
-    primary: '#000000', // Black for dark mode
-    text: '#ffffff', // White for text in dark mode
-    buttonBackground: '#455a64', // Dark mode button
-    buttonHover: '#37474f', // Dark mode button hover
+    background: '#181818', // Dark gray background
+    primary: '#282828', // Slightly lighter dark background
+    text: '#ffffff', // White for text
+    buttonBackground: '#26a69a', // Soothing teal for buttons
+    buttonHover: '#1e807a', // Darker teal for button hover
   },
 };
 
@@ -48,17 +48,414 @@ const fadeIn = keyframes`
   }
 `;
 
+const Main = styled.main`
+  padding: 20px;
+  text-align: center;
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+`;
+
+const Section = styled.section`
+  margin: 20px 0;
+  padding: 20px;
+  background: ${({ theme }) => theme.primary};
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: ${fadeIn} 1s ease-in-out;
+
+  h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: ${({ theme }) => theme.text};
+  }
+
+  p, ul {
+    color: ${({ theme }) => theme.text};
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px;
+    h2 {
+      font-size: 20px;
+    }
+    p, ul {
+      font-size: 14px;
+    }
+  }
+`;
+
+const SkillsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr; /* Single column */
+  gap: 10px;
+  text-align: center;
+`;
+
+const SkillItem = styled.div`
+  background-color: ${({ theme }) => theme.buttonBackground};
+  padding: 20px;
+  padding-right: 50px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between; /* Align content to space between */
+  align-items: center;
+  height: 150px; /* Adjust height as needed */
+  animation: ${fadeIn} 1s ease-in-out;
+  transition: transform 0.3s;
+
+  img {
+    max-width: 90px; /* Adjust size as needed */
+    max-height: 90px; /* Adjust size as needed */
+    margin-left: 40px;
+  }
+
+  &:hover {
+    transform: scale(1.02);
+  }
+`;
+
+const ProgressBarContainer = styled.div`
+  width: 80%; /* Adjust width as needed */
+`;
+
+const ProgressBar = styled.div`
+  height: 20px;
+  background-color: ${({ theme }) => theme.primary};
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  width: 100%; /* Full width of the container */
+`;
+
+const Progress = styled.div`
+  height: 100%;
+  width: ${({ percentage }) => percentage}%;
+  background-color: ${({ theme }) => theme.text};
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: width 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.primary}; /* Contrast color for text */
+  font-weight: bold;
+`;
+
+const SkillLabel = styled.div`
+  margin-bottom: 5px;
+  text-align: left;
+  color: ${({ theme }) => theme.text};
+`;
+
+const Skill = ({ logo, alt, name, percentage }) => {
+  return (
+    <SkillItem>
+      <img src={logo} alt={alt} />
+      <ProgressBarContainer>
+        <SkillLabel>{name}</SkillLabel>
+        <ProgressBar>
+          <Progress percentage={percentage}>
+            {percentage}%
+          </Progress>
+        </ProgressBar>
+      </ProgressBarContainer>
+    </SkillItem>
+  );
+};
+
+const ExperienceGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 50px;
+  text-align: left;
+`;
+
+const ExperienceItem = ({ logo, alt, title, company, duration, responsibilities, color, flipped, onClick }) => {
+  return (
+    <StyledExperienceItem color={color} flipped={flipped} onClick={onClick}>
+      <div className="front">
+        <LogoContainer>
+          <img src={logo} alt={alt} />
+        </LogoContainer>
+        <HoverPrompt>Click to see details of the experience</HoverPrompt>
+        <div className="background-blur"></div>
+      </div>
+      <div className="back">
+        <h3>{title}</h3>
+        <p>{company}<br />{duration}</p>
+        <ul>
+          {responsibilities.map((item, index) => <li key={index}>{item}</li>)}
+        </ul>
+      </div>
+    </StyledExperienceItem>
+  );
+};
+
+const HoverPrompt = styled.div`
+  visibility: hidden;
+  color: ${({ theme }) => theme.text};
+  text-align: center;
+  font-size: 14px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 2; /* Ensure it is above the background */
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+`;
+
+const LogoContainer = styled.div`
+  position: relative;
+  z-index: 2; /* Ensure the logo is above the background blur */
+`;
+
+const StyledExperienceItem = styled.div`
+  background-color: ${({ color }) => color};
+  padding: 20px;
+  border-radius: 10px;
+  animation: ${fadeIn} 1s ease-in-out;
+  transition: transform 0.3s, filter 0.3s;
+  perspective: 1000px; /* Perspective for 3D effect */
+  position: relative;
+  cursor: pointer;
+  height: 300px; /* Increased height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover ${HoverPrompt} {
+    visibility: visible;
+  }
+
+  &:hover .background-blur {
+    filter: blur(4px);
+  }
+
+  .front, .back {
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    position: absolute;
+    transition: transform 0.6s, filter 0.3s;
+    text-align: center; /* Center the text */
+  }
+
+  .front {
+    background-color: ${({ color }) => color};
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .background-blur {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: ${({ color }) => color};
+      z-index: 1;
+    }
+
+    img {
+      max-width: 200px;
+      max-height: 200px;
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  .back {
+    background-color: ${({ color }) => color}; /* Same background color as the front */
+    color: ${({ theme }) => theme.text};
+    transform: rotateY(180deg);
+    text-align: center; /* Center the text */
+  }
+
+  ${({ flipped }) => flipped && `
+    .front {
+      transform: rotateY(180deg);
+    }
+    .back {
+      transform: rotateY(0deg);
+    }
+  `}
+`;
+
+const Project = styled.div`
+  background-color: ${({ theme }) => theme.primary};
+  padding: 40px; /* Increase padding for more space */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: ${fadeIn} 1s ease-in-out;
+  transition: transform 0.3s;
+  text-align: left;
+  margin-bottom: 30px; /* Add more space between projects */
+
+  h3 {
+    margin-bottom: 20px; /* Increase margin for better spacing */
+    color: ${({ theme }) => theme.text};
+    font-size: 28px; /* Increase font size for higher contrast */
+  }
+
+  p {
+    color: ${({ theme }) => theme.text};
+    font-size: 18px; /* Increase font size for better readability */
+    line-height: 1.6; /* Increase line height for better spacing */
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    padding: 20px;
+    h3 {
+      font-size: 22px; /* Slightly larger font size for mobile */
+    }
+    p {
+      font-size: 16px; /* Slightly larger font size for mobile */
+    }
+  }
+`;
+
+const CertificationsList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  color: ${({ theme }) => theme.text};
+  font-size: 16px;
+  animation: ${fadeIn} 1s ease-in-out;
+
+  li {
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
+
+const EducationDetails = styled.div`
+  color: ${({ theme }) => theme.text};
+  font-size: 16px;
+  animation: ${fadeIn} 1s ease-in-out;
+
+  p {
+    margin: 10px 0;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
+
+const Timeline = styled.div`
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: left;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: ${({ theme }) => theme.text};
+    left: 50%;
+    margin-left: -1px;
+  }
+`;
+
+const TimelineItem = styled.div`
+  padding: 20px 40px;
+  position: relative;
+  background-color: inherit;
+  width: 50%;
+
+  &:nth-child(odd) {
+    left: 0;
+  }
+
+  &:nth-child(even) {
+    left: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    right: -17px;
+    background-color: ${({ theme }) => theme.background};
+    border: 4px solid ${({ theme }) => theme.text};
+    top: 15px;
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  &:nth-child(even)::after {
+    left: -16px;
+  }
+`;
+
+const TimelineContent = styled.div`
+  padding: 20px 30px;
+  background-color: ${({ theme }) => theme.primary};
+  position: relative;
+  border-radius: 6px;
+  animation: ${fadeIn} 1s ease-in-out;
+
+  h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: ${({ theme }) => theme.text};
+  }
+
+  p {
+    color: ${({ theme }) => theme.text};
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px;
+    h3 {
+      font-size: 18px;
+    }
+    p {
+      font-size: 14px;
+    }
+  }
+`;
+
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [flippedIndex, setFlippedIndex] = useState(null);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
+  const handleFlip = (index) => {
+    setFlippedIndex(index === flippedIndex ? null : index);
+  };
+
   return (
     <ThemeProvider theme={darkMode ? theme.dark : theme.light}>
       <PageContainer>
-      <Header>
+        <Header darkMode={darkMode}>
           <HeaderButtonContainer>
             <HeaderButtonWrapper>
               <HeaderButton href="#about">
@@ -104,24 +501,27 @@ const App = () => {
           </HeaderButtonContainer>
         </Header>
         <Main>
-          <Section id="about" title="About Me">
+          <Section id="about">
+            <h2>About Me</h2>
             <p>
               Hello! I'm Armaan Ghosh, a first-year Computer Engineering student at the University of Waterloo. I have a passion for technology and love exploring new advancements in the field. I am excited to learn and grow in the world of engineering and look forward to contributing to innovative projects.
             </p>
           </Section>
-          <Section id="skills" title="Technical Skills">
+          <Section id="skills">
+            <h2>Technical Skills</h2>
             <SkillsGrid>
-              <SkillItem logo={javaLogo} alt="Java" name="Java" />
-              <SkillItem logo={pythonLogo} alt="Python" name="Python" />
-              <SkillItem logo={cLogo} alt="C/C++" name="C/C++" />
-              <SkillItem logo={jsLogo} alt="JavaScript" name="JavaScript" />
-              <SkillItem logo={reactLogo} alt="React" name="React" />
-              <SkillItem logo={htmlCssLogo} alt="HTML/CSS" name="HTML/CSS" />
-              <SkillItem logo={kotlinLogo} alt="Kotlin" name="Kotlin" />
-              <SkillItem logo={vhdlLogo} alt="VHDL" name="VHDL" />
+              <Skill logo={javaLogo} alt="Java" name="Java" percentage={80} />
+              <Skill logo={pythonLogo} alt="Python" name="Python" percentage={70} />
+              <Skill logo={cLogo} alt="C/C++" name="C/C++" percentage={80} />
+              <Skill logo={jsLogo} alt="JavaScript" name="JavaScript" percentage={75} />
+              <Skill logo={reactLogo} alt="React" name="React" percentage={75} />
+              <Skill logo={htmlCssLogo} alt="HTML/CSS" name="HTML/CSS" percentage={90} />
+              <Skill logo={kotlinLogo} alt="Kotlin" name="Kotlin" percentage={60} />
+              <Skill logo={vhdlLogo} alt="VHDL" name="VHDL" percentage={60} />
             </SkillsGrid>
           </Section>
-          <Section id="experience" title="Work Experience">
+          <Section id="experience">
+            <h2>Work Experience</h2>
             <ExperienceGrid>
               <ExperienceItem
                 logo={hdfcErgoLogo}
@@ -133,7 +533,9 @@ const App = () => {
                   'Developed and optimized user interfaces for the 1UP timesheet app using JavaScript and React, improving usability for over 50,000 customers and boosting user engagement by 35%',
                   'Designed and implemented advanced features for digital timesheet management with Firebase integration, achieving a 30% increase in timely submissions and reducing manual entry errors by 200%',
                 ]}
-                color="#ff7043" // Example color that matches the logo
+                color="#e41c24"
+                flipped={flippedIndex === 0}
+                onClick={() => handleFlip(0)}
               />
               <ExperienceItem
                 logo={nowFloatsLogo}
@@ -145,29 +547,41 @@ const App = () => {
                   'Conducted market research for a new marketing automation product targeting MSMEs, identifying 5 key customer segments and performing SWOT analysis',
                   'Developed go-to-market and pricing strategies using insights from 10+ industry reports and competitor analysis, ensuring competitive product positioning in the market',
                 ]}
-                color="#FFB900" // Example color that matches the logo
+                color="#FFB900"
+                flipped={flippedIndex === 1}
+                onClick={() => handleFlip(1)}
               />
             </ExperienceGrid>
           </Section>
-          <Section id="projects" title="Projects">
-            <Project
-              name="BudgetRoyale"
-              description="Developed a gamified personal finance tracking web app tailored for university students, resulting in a 30% increase in user engagement within the first month. Implemented AI-driven financial advice features using React and Firebase, helping users reduce unnecessary expenses by an average of 20% per month."
-              date="June 2024 – Present"
-            />
-            <Project
-              name="Byte Bites: Recipe Recommendation App"
-              description="Developed the frontend of a recipe recommendation app for vegetarian international students using HTML and CSS, enhancing user experience and engagement. Collaborated with the backend team to integrate the Spoonacular API, contributing to a 25% improvement in user engagement."
-              date="Jan 2024"
-            />
-            <Project
-              name="Geesespotter"
-              description="Engineered a C++ console-based Minesweeper game with a Waterloo theme, focusing on problem-solving, algorithm efficiency, and enhancing skills in functions and dynamic memory allocation."
-              date="Oct 2023"
-            />
+          <Section id="projects">
+            <h2>Projects</h2>
+            <Timeline>
+              <TimelineItem>
+                <TimelineContent>
+                  <h3>BudgetRoyale</h3>
+                  <p>Developed a gamified personal finance tracking web app tailored for university students, resulting in a 30% increase in user engagement within the first month. Implemented AI-driven financial advice features using React and Firebase, helping users reduce unnecessary expenses by an average of 20% per month.</p>
+                  <p>June 2024 – Present</p>
+                </TimelineContent>
+              </TimelineItem>
+              <TimelineItem>
+                <TimelineContent>
+                  <h3>Byte Bites: Recipe Recommendation App</h3>
+                  <p>Developed the frontend of a recipe recommendation app for vegetarian international students using HTML and CSS, enhancing user experience and engagement. Collaborated with the backend team to integrate the Spoonacular API, contributing to a 25% improvement in user engagement.</p>
+                  <p>Jan 2024</p>
+                </TimelineContent>
+              </TimelineItem>
+              <TimelineItem>
+                <TimelineContent>
+                  <h3>Geesespotter</h3>
+                  <p>Engineered a C++ console-based Minesweeper game with a Waterloo theme, focusing on problem-solving, algorithm efficiency, and enhancing skills in functions and dynamic memory allocation.</p>
+                  <p>Oct 2023</p>
+                </TimelineContent>
+              </TimelineItem>
+            </Timeline>
           </Section>
-          <Section id="certifications" title="Certifications">
-            <ul>
+          <Section id="certifications">
+            <h2>Certifications</h2>
+            <CertificationsList>
               <li>
                 <strong>IBM AI Developer Professional Certificate:</strong> IBM, Coursera - Acquired expertise in software engineering, AI, generative AI, prompt engineering, HTML, JavaScript, and Python through 20+ hands-on labs and comprehensive coursework.
               </li>
@@ -177,20 +591,23 @@ const App = () => {
               <li>
                 <strong>Algorithms, Part I:</strong> Princeton University, Coursera - Gained in-depth knowledge of algorithms with a focus on data structures and optimization, enhancing problem-solving skills by 20%, and completed comprehensive coursework on sorting, searching, and graph algorithms, improving algorithmic thinking by 25%.
               </li>
-            </ul>
+            </CertificationsList>
           </Section>
-          <Section id="education" title="Education">
-            <p>
-              <strong>University of Waterloo</strong>
-              <br />
-              Bachelor of Applied Science in Computer Engineering
-              <br />
-              Expected to graduate in 2028, Waterloo, ON
-            </p>
-            <ul>
-              <li>Courses: Algorithms and Data Structures (C++), Digital Circuits and Systems (VHDL), Object-Oriented Programming (C++), Discrete Math and Logic, Calculus II</li>
-              <li>Involvements: Orientation Front-Line Leader, Orientation Director, ECE Society Web Developer, EngSoc First Year Conference, Waterloo Engineering Competition IT, Mentorship and Photography Director</li>
-            </ul>
+          <Section id="education">
+            <h2>Education</h2>
+            <EducationDetails>
+              <p>
+                <strong>University of Waterloo</strong>
+                <br />
+                Bachelor of Applied Science in Computer Engineering
+                <br />
+                Expected to graduate in 2028, Waterloo, ON
+              </p>
+              <ul>
+                <li>Courses: Algorithms and Data Structures (C++), Digital Circuits and Systems (VHDL), Object-Oriented Programming (C++), Discrete Math and Logic, Calculus II</li>
+                <li>Involvements: Orientation Front-Line Leader, Orientation Director, ECE Society Web Developer, EngSoc First Year Conference, Waterloo Engineering Competition IT, Mentorship and Photography Director</li>
+              </ul>
+            </EducationDetails>
           </Section>
         </Main>
         <Footer />
@@ -209,7 +626,8 @@ const PageContainer = styled.div`
 `;
 
 const Header = styled.header`
-  background-image: url(${({ darkMode }) => darkMode ? '/dark_mode_photo.jpeg' : '/light_mode_photo.png'});
+  //background-image: url(${({ darkMode }) => darkMode ? '/dark_mode_photo.jpeg' : '/light_mode_photo.png'});
+  background-image: url('/light_mode_photo.png');
   background-size: cover;
   background-position: center;
   height: 100vh; /* Adjust the height to cover the entire window */
@@ -227,7 +645,7 @@ const Header = styled.header`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.3); /* Black overlay with 50% transparency */
+    background-color: ${({ darkMode }) => darkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.2)'}; /* Adjust transparency based on mode */
     z-index: 1;
   }
 
@@ -336,208 +754,6 @@ const HeaderButtonWrapper = styled.div`
   }
 `;
 
-const Main = styled.main`
-  padding: 20px;
-  text-align: center;
-`;
-
-const Section = ({ id, title, children }) => (
-  <section id={id}>
-    <Card>
-      <h2>{title}</h2>
-      {children}
-    </Card>
-  </section>
-);
-
-const SkillsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid */
-  gap: 20px; /* Adjust the gap between items as needed */
-  text-align: center;
-`;
-
-const SkillItem = ({ logo, alt, name }) => {
-  const [flipped, setFlipped] = useState(false);
-
-  const handleMouseEnter = () => setFlipped(true);
-  const handleMouseLeave = () => setFlipped(false);
-
-  return (
-    <StyledSkillItem onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} flipped={flipped}>
-      <div className="front">
-        <img src={logo} alt={alt} />
-      </div>
-      <div className="back">
-        <p>{name}</p>
-      </div>
-    </StyledSkillItem>
-  );
-};
-
-const StyledSkillItem = styled.div`
-  background-color: ${({ theme }) => theme.buttonBackground}; /* Use theme button background color */
-  padding: 20px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px; /* Adjust the height as needed */
-  perspective: 1000px; /* Perspective for 3D effect */
-  position: relative;
-  animation: ${fadeIn} 1s ease-in-out;
-
-  .front, .back {
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    position: absolute;
-    transition: transform 0.6s;
-    text-align: center;
-  }
-
-  .front {
-    background-color: ${({ theme }) => theme.light};
-    img {
-      max-width: 70%; /* Ensure the logo fits within the cell */
-      max-height: 70%; /* Ensure the logo fits within the cell */
-    }
-  }
-
-  .back {
-    background-color: ${({ theme }) => theme.buttonBackground}; /* Use theme button background color */
-    color: ${({ theme }) => theme.text}; /* Text color */
-    font-size: 30px;
-    transform: rotateY(180deg);
-  }
-
-  ${({ flipped }) => flipped && `
-    .front {
-      transform: rotateY(180deg);
-    }
-    .back {
-      transform: rotateY(0deg);
-    }
-  `}
-`;
-
-const ExperienceGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
-  gap: 20px; /* Adjust the gap between items as needed */
-`;
-
-const ExperienceItem = ({ logo, alt, title, company, duration, responsibilities, color }) => {
-  const [flipped, setFlipped] = useState(false);
-
-  const handleMouseEnter = () => setFlipped(true);
-  const handleMouseLeave = () => setFlipped(false);
-
-  return (
-    <StyledExperienceItem onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} flipped={flipped} color={color}>
-      <div className="front">
-        <img src={logo} alt={alt} />
-      </div>
-      <div className="back">
-        <h3>{title}</h3>
-        <p>{company}<br />{duration}</p>
-        <ul>
-          {responsibilities.map((item, index) => <li key={index}>{item}</li>)}
-        </ul>
-      </div>
-    </StyledExperienceItem>
-  );
-};
-
-const StyledExperienceItem = styled.div`
-  background-color: ${({ color }) => color}; /* Use the passed color prop */
-  padding: 20px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 300px; /* Adjust the height as needed */
-  perspective: 1000px; /* Perspective for 3D effect */
-  position: relative;
-  animation: ${fadeIn} 1s ease-in-out;
-  margin-bottom: 20px;
-
-  .front, .back {
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    position: absolute;
-    transition: transform 0.6s;
-    text-align: center;
-  }
-
-  .front {
-    background-color: ${({ color }) => color}; /* Use the passed color prop */
-    img {
-      max-width: 90%; /* Increase the size of the logo */
-      max-height: 90%; /* Increase the size of the logo */
-      object-fit: cover; /* Ensure the logo covers the entire cell */
-    }
-  }
-
-  .back {
-    background-color: ${({ color }) => color}; /* Use the passed color prop */
-    color: ${({ theme }) => theme.text}; /* Text color */
-    font-size: 20px;
-    padding: 10px;
-    transform: rotateY(180deg);
-    overflow-y: auto;
-  }
-
-  ${({ flipped }) => flipped && `
-    .front {
-      transform: rotateY(180deg);
-    }
-    .back {
-      transform: rotateY(0deg);
-    }
-  `}
-`;
-
-const Project = ({ name, description, date }) => (
-  <Card>
-    <p><strong>{name}:</strong> {description}</p>
-    <p>{date}</p>
-  </Card>
-);
-
-const Card = styled.div`
-  background-color: ${({ theme }) => theme.primary};
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.9);
-  margin-bottom: 40px;
-  animation: ${fadeIn} 1s ease-in-out;
-  text-align: center;
-`;
-
-const Footer = () => (
-  <footer>
-    <p>&copy; 2024 Armaan Ghosh</p>
-    <div className="contact-info">
-      <p>
-        <a href="tel:+15489220973">+1 548-922-0973</a> | 
-        <a href="mailto:a65ghosh@uwaterloo.ca">a65ghosh@uwaterloo.ca</a>  |  
-        <a href="https://www.linkedin.com/in/armaan-ghosh-741178211/">LinkedIn</a> |  
-        <a href="https://github.com/FranceForever">GitHub</a>
-      </p>
-    </div>
-  </footer>
-);
-
 const ToggleSwitch = styled.button`
   position: absolute;
   top: 20px;
@@ -553,6 +769,13 @@ const ToggleSwitch = styled.button`
   &:hover {
     background-color: ${({ theme }) => theme.buttonHover}; /* Use theme button hover color */
   }
+`;
+
+const Footer = styled.footer`
+  padding: 20px;
+  background-color: ${({ theme }) => theme.primary};
+  color: ${({ theme }) => theme.text};
+  text-align: center;
 `;
 
 ReactDOM.render(<App />, document.getElementById('root'));
