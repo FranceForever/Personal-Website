@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import styled, { ThemeProvider, keyframes, css } from 'styled-components';
 import Timeline from './Timeline'; // Import the Timeline component
+import { useInView } from 'react-intersection-observer'; // Import useInView
 
 // Import logos
 import javaLogo from './logos/java.png';
@@ -20,6 +21,8 @@ import nowFloatsLogo from './logos/nowfloats_logo.png';
 
 // Import FontAwesome Logos
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faPhone, faCopyright } from '@fortawesome/free-solid-svg-icons';
+import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faUser, faLaptopCode, faBriefcase, faProjectDiagram, faCertificate, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 
 // Define the theme colors
@@ -28,15 +31,15 @@ const theme = {
     background: '#ffffff', // White
     primary: '#f0f0f0', // Light gray
     text: '#000000', // Black for text
-    buttonBackground: '#66ccff', // Light blue for buttons
-    buttonHover: '#3399ff', // Darker light blue for button hover
+    buttonBackground: '#4c9ed9', // Darker light blue for buttons
+    buttonHover: '#357bb5', // Darker light blue for button hover
   },
   dark: {
     background: '#181818', // Dark gray background
     primary: '#282828', // Slightly lighter dark background
     text: '#ffffff', // White for text
-    buttonBackground: '#26a69a', // Soothing teal for buttons
-    buttonHover: '#1e807a', // Darker teal for button hover
+    buttonBackground: '#1e3a5f', // Dark blue for buttons
+    buttonHover: '#152a45', // Darker dark blue for button hover
   },
 };
 
@@ -49,9 +52,15 @@ const fadeIn = keyframes`
   }
 `;
 
-const flipAnimation = keyframes`
-  0% { transform: rotateY(0); }
-  100% { transform: rotateY(180deg); }
+const slideUp = keyframes`
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 `;
 
 const flipExperienceAnimation = keyframes`
@@ -70,30 +79,47 @@ const Main = styled.main`
 const Section = styled.section`
   margin: 20px 0;
   padding: 20px;
-  background: ${({ theme }) => theme.primary};
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-bottom: 4px solid ${({ theme }) => theme.buttonBackground};
   animation: ${fadeIn} 1s ease-in-out;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+
+  ${({ isVisible }) =>
+    isVisible &&
+    css`
+      opacity: 1;
+      transform: translateY(0);
+    `}
 
   h2 {
-    margin-bottom: 10px;
-    font-size: 24px;
+    margin-bottom: 20px;
+    font-size: 30px;
     color: ${({ theme }) => theme.text};
   }
 
-  p, ul {
+  p, ul, li {
     color: ${({ theme }) => theme.text};
-    font-size: 16px;
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0px 70px;
+    text-align: justify;
   }
 
   @media (max-width: 768px) {
     padding: 10px;
     h2 {
-      font-size: 20px;
+      font-size: 22px;
     }
     p, ul {
-      font-size: 14px;
+      font-size: 16px;
     }
+  }
+`;
+
+const AboutSection = styled(Section)`
+  p {
+    margin: 0px 140px; /* Adjust this value to your desired margin */
   }
 `;
 
@@ -103,8 +129,7 @@ const SkillsSection = styled.section`
   justify-content: center;
   align-items: center;
   width: 100wh;
-  height: 80vh;
-  background-color: ${({ theme }) => theme.primary};
+  height: 70vh;
 `;
 
 const CenterHeading = styled.div`
@@ -168,6 +193,21 @@ const SkillItem = styled.div`
   transition: transform 0.6s;
   transform: ${({ flipped }) => (flipped ? 'rotateY(180deg)' : 'rotateY(0)')};
   cursor: pointer;
+
+  &:hover {
+    &::after {
+      content: 'Click to see proficiency of skill';
+      position: absolute;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: ${({ theme }) => theme.text};
+      color: ${({ theme }) => theme.primary};
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8em;
+    }
+  }
 
   .front, .back {
     position: absolute;
@@ -243,7 +283,6 @@ const ExperienceItem = ({ logo, alt, title, company, duration, responsibilities,
           <img src={logo} alt={alt} />
         </LogoContainer>
         <HoverPrompt>Click to see details of the experience</HoverPrompt>
-        <div className="background-blur"></div>
       </div>
       <div className="back">
         <h3>{title}</h3>
@@ -337,66 +376,60 @@ const StyledExperienceItem = styled.div`
     color: ${({ theme }) => theme.text};
     transform: rotateY(180deg);
     text-align: center; /* Center the text */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    h3 {
+      margin-bottom: 10px;
+      font-size: 30px;
+      text-shadow: 0.5px 0.5px 1px rgba(255, 255, 255, 0.2); /* Add text shadow */
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    p {
+      margin-bottom: 20px;
+      text-shadow: 0.5px 0.5px 1px rgba(255, 255, 255, 0.2); /* Add text shadow */
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    ul {
+      text-align: justify;
+      margin: 0px 50px;
+      list-style-type: none;
+      padding: 0;
+
+      li {
+        text-shadow: 0.5px 0.5px 1px rgba(255, 255, 255, 0.2); /* Add text shadow */
+        padding: 5px 10px;
+        border-radius: 5px;
+        margin-bottom: 5px; /* Space between list items */
+      }
+    }
   }
 
   ${({ flipped }) => flipped && css`
     .front {
-      animation: ${flipExperienceAnimation} 0.6s forwards;
       transform: rotateY(180deg);
     }
     .back {
-      animation: ${flipExperienceAnimation} 0.6s forwards;
-      transform: rotateY(0deg);
+      transform: rotateY(360deg);
     }
   `}
-`;
-
-const Project = styled.div`
-  background-color: ${({ theme }) => theme.primary};
-  padding: 40px; /* Increase padding for more space */
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  animation: ${fadeIn} 1s ease-in-out;
-  transition: transform 0.3s;
-  text-align: left;
-  margin-bottom: 30px; /* Add more space between projects */
-
-  h3 {
-    margin-bottom: 20px; /* Increase margin for better spacing */
-    color: ${({ theme }) => theme.text};
-    font-size: 28px; /* Increase font size for higher contrast */
-  }
-
-  p {
-    color: ${({ theme }) => theme.text};
-    font-size: 18px; /* Increase font size for better readability */
-    line-height: 1.6; /* Increase line height for better spacing */
-  }
-
-  &:hover {
-    transform: scale(1.05);
-  }
-
-  @media (max-width: 768px) {
-    padding: 20px;
-    h3 {
-      font-size: 22px; /* Slightly larger font size for mobile */
-    }
-    p {
-      font-size: 16px; /* Slightly larger font size for mobile */
-    }
-  }
 `;
 
 const CertificationsList = styled.ul`
   list-style-type: none;
   padding: 0;
   color: ${({ theme }) => theme.text};
-  font-size: 16px;
+  
   animation: ${fadeIn} 1s ease-in-out;
 
   li {
-    margin-bottom: 10px;
+    margin-bottom: 30px;
   }
 
   @media (max-width: 768px) {
@@ -405,18 +438,22 @@ const CertificationsList = styled.ul`
 `;
 
 const EducationDetails = styled.div`
+  list-style-type: none;
+  padding: 0;
   color: ${({ theme }) => theme.text};
-  font-size: 16px;
+  
   animation: ${fadeIn} 1s ease-in-out;
 
   p {
-    margin: 10px 0;
+    margin: 10px 130px; /* Ensure margin consistency */
+    padding: 0; /* Reset padding */
+    line-height: 1.6; /* Improve readability */
   }
 
-  ul {
+  li {
     list-style-type: none;
-    padding: 0;
-    margin: 0;
+    margin-bottom: 30px;
+    margin-left: 20px;
   }
 
   @media (max-width: 768px) {
@@ -444,6 +481,13 @@ const App = () => {
       prevFlipped.map((flipped, i) => (i === index ? !flipped : flipped))
     );
   };
+
+  const { ref: aboutRef, inView: aboutInView } = useInView({ triggerOnce: true });
+  const { ref: skillsRef, inView: skillsInView } = useInView({ triggerOnce: true });
+  const { ref: experienceRef, inView: experienceInView } = useInView({ triggerOnce: true });
+  const { ref: projectsRef, inView: projectsInView } = useInView({ triggerOnce: true });
+  const { ref: certificationsRef, inView: certificationsInView } = useInView({ triggerOnce: true });
+  const { ref: educationRef, inView: educationInView } = useInView({ triggerOnce: true });
 
   return (
     <ThemeProvider theme={darkMode ? theme.dark : theme.light}>
@@ -494,13 +538,13 @@ const App = () => {
           </HeaderButtonContainer>
         </Header>
         <Main>
-          <Section id="about">
+          <AboutSection id="about" ref={aboutRef} isVisible={aboutInView}>
             <h2>About Me</h2>
             <p>
-              Hello! I'm Armaan Ghosh, a first-year Computer Engineering student at the University of Waterloo. I have a passion for technology and love exploring new advancements in the field. I am excited to learn and grow in the world of engineering and look forward to contributing to innovative projects.
+              Hello! I'm Armaan Ghosh, a first-year Computer Engineering student at the University of Waterloo. I have a deep passion for technology and a keen interest in exploring the latest advancements in the field. My journey in tech has equipped me with a diverse skill set, including various programming languages and frameworks. I'm always eager to learn and grow, both academically and personally. Outside of academics, I enjoy taking on leadership roles and contributing to the community. I look forward to leveraging my skills and experiences to drive innovation and make meaningful contributions to the world of engineering.
             </p>
-          </Section>
-          <Section id="skills">
+          </AboutSection>
+          <Section id="skills" ref={skillsRef} isVisible={skillsInView}>
             <SkillsSection theme={theme.light}>
               <SkillsGrid>
                 {skills.map((skill, index) => (
@@ -519,7 +563,7 @@ const App = () => {
               </SkillsGrid>
             </SkillsSection>
           </Section>
-          <Section id="experience">
+          <Section id="experience" ref={experienceRef} isVisible={experienceInView}>
             <h2>Work Experience</h2>
             <ExperienceGrid>
               <ExperienceItem
@@ -552,11 +596,11 @@ const App = () => {
               />
             </ExperienceGrid>
           </Section>
-          <Section id="projects">
+          <Section id="projects" ref={projectsRef} isVisible={projectsInView}>
             <h2>Projects</h2>
             <Timeline />
           </Section>
-          <Section id="certifications">
+          <Section id="certifications" ref={certificationsRef} isVisible={certificationsInView}>
             <h2>Certifications</h2>
             <CertificationsList>
               <li>
@@ -570,7 +614,7 @@ const App = () => {
               </li>
             </CertificationsList>
           </Section>
-          <Section id="education">
+          <Section id="education" ref={educationRef} isVisible={educationInView}>
             <h2>Education</h2>
             <EducationDetails>
               <p>
@@ -578,7 +622,7 @@ const App = () => {
                 <br />
                 Bachelor of Applied Science in Computer Engineering
                 <br />
-                Expected to graduate in 2028, Waterloo, ON
+                Expected to graduate in 2028
               </p>
               <ul>
                 <li>Courses: Algorithms and Data Structures (C++), Digital Circuits and Systems (VHDL), Object-Oriented Programming (C++), Discrete Math and Logic, Calculus II</li>
@@ -587,7 +631,27 @@ const App = () => {
             </EducationDetails>
           </Section>
         </Main>
-        <Footer />
+        <Footer>
+          <p>
+            <FontAwesomeIcon icon={faCopyright} /> 2024 Armaan Ghosh
+          </p>
+          <div className="contact-info">
+            <a href="mailto:a65ghosh@uwaterloo.ca">
+              <FontAwesomeIcon icon={faEnvelope} /> a65ghosh@uwaterloo.ca
+            </a>
+            <span>
+              <FontAwesomeIcon icon={faPhone} /> +1 548-922-0973
+            </span>
+          </div>
+          <div>
+            <a href="https://www.linkedin.com/in/armaan-ghosh-741178211/" target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faLinkedin} />
+            </a>
+            <a href="https://github.com/FranceForever" target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faGithub} />
+            </a>
+          </div>
+        </Footer>
       </PageContainer>
     </ThemeProvider>
   );
@@ -753,6 +817,33 @@ const Footer = styled.footer`
   background-color: ${({ theme }) => theme.primary};
   color: ${({ theme }) => theme.text};
   text-align: center;
+
+  .contact-info a, span {
+    color: ${({ theme }) => theme.text};
+    margin: 0 20px;
+    text-decoration: none;
+    font-size: 1em; /* Increase the font size for larger icons */
+
+    &:hover {
+      color: ${({ theme }) => theme.buttonHover};
+    }
+  }
+
+  a {
+    color: ${({ theme }) => theme.text};
+    margin: 0 20px;
+    text-decoration: none;
+    font-size: 2em; /* Increase the font size for larger icons */
+
+    &:hover {
+      color: ${({ theme }) => theme.buttonHover};
+    }
+  }
+
+  .contact-info {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 `;
 
 ReactDOM.render(<App />, document.getElementById('root'));
