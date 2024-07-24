@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import styled, { ThemeProvider, keyframes } from 'styled-components';
+import styled, { ThemeProvider, keyframes, css } from 'styled-components';
+import Timeline from './Timeline'; // Import the Timeline component
 
 // Import logos
 import javaLogo from './logos/java.png';
@@ -48,6 +49,16 @@ const fadeIn = keyframes`
   }
 `;
 
+const flipAnimation = keyframes`
+  0% { transform: rotateY(0); }
+  100% { transform: rotateY(180deg); }
+`;
+
+const flipExperienceAnimation = keyframes`
+  0% { transform: rotateY(0); }
+  100% { transform: rotateY(180deg); }
+`;
+
 const Main = styled.main`
   padding: 20px;
   text-align: center;
@@ -86,85 +97,136 @@ const Section = styled.section`
   }
 `;
 
+const SkillsSection = styled.section`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100wh;
+  height: 80vh;
+  background-color: ${({ theme }) => theme.primary};
+`;
+
+const CenterHeading = styled.div`
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: ${({ theme }) => theme.buttonBackground};
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: ${({ theme }) => theme.text};
+  cursor: pointer;
+  &:hover {
+    &::after {
+      content: 'Click to see proficiency of skills';
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: ${({ theme }) => theme.text};
+      color: ${({ theme }) => theme.primary};
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8em;
+    }
+  }
+`;
+
 const SkillsGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr; /* Single column */
-  gap: 10px;
-  text-align: center;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 100px; /* Increased gap for more spacing */
+  width: 500px; /* Increased width for more spacing */
+  height: 500px; /* Increased height for more spacing */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const SkillItem = styled.div`
+  width: 100px;
+  height: 100px;
   background-color: ${({ theme }) => theme.buttonBackground};
-  padding: 20px;
-  padding-right: 50px;
-  border-radius: 10px;
+  border-radius: 50%;
   display: flex;
-  justify-content: space-between; /* Align content to space between */
+  justify-content: center;
   align-items: center;
-  height: 150px; /* Adjust height as needed */
-  animation: ${fadeIn} 1s ease-in-out;
-  transition: transform 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  transform: ${({ flipped }) => (flipped ? 'rotateY(180deg)' : 'rotateY(0)')};
+  cursor: pointer;
+
+  .front, .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+  }
+
+  .back {
+    background-color: ${({ theme }) => theme.buttonHover};
+    color: ${({ theme }) => theme.primary};
+    transform: rotateY(180deg);
+  }
 
   img {
-    max-width: 90px; /* Adjust size as needed */
-    max-height: 90px; /* Adjust size as needed */
-    margin-left: 40px;
+    max-width: 60%;
+    max-height: 60%;
   }
 
-  &:hover {
-    transform: scale(1.02);
+  &:nth-child(1) {
+    grid-area: 1 / 2;
+  }
+  &:nth-child(2) {
+    grid-area: 2 / 3;
+  }
+  &:nth-child(3) {
+    grid-area: 3 / 2;
+  }
+  &:nth-child(4) {
+    grid-area: 2 / 1;
+  }
+  &:nth-child(5) {
+    grid-area: 1 / 1;
+  }
+  &:nth-child(6) {
+    grid-area: 1 / 3;
+  }
+  &:nth-child(7) {
+    grid-area: 3 / 1;
+  }
+  &:nth-child(8) {
+    grid-area: 3 / 3;
   }
 `;
 
-const ProgressBarContainer = styled.div`
-  width: 80%; /* Adjust width as needed */
-`;
-
-const ProgressBar = styled.div`
-  height: 20px;
-  background-color: ${({ theme }) => theme.primary};
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-  width: 100%; /* Full width of the container */
-`;
-
-const Progress = styled.div`
-  height: 100%;
-  width: ${({ percentage }) => percentage}%;
-  background-color: ${({ theme }) => theme.text};
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: width 0.3s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.primary}; /* Contrast color for text */
-  font-weight: bold;
-`;
-
-const SkillLabel = styled.div`
-  margin-bottom: 5px;
-  text-align: left;
-  color: ${({ theme }) => theme.text};
-`;
-
-const Skill = ({ logo, alt, name, percentage }) => {
-  return (
-    <SkillItem>
-      <img src={logo} alt={alt} />
-      <ProgressBarContainer>
-        <SkillLabel>{name}</SkillLabel>
-        <ProgressBar>
-          <Progress percentage={percentage}>
-            {percentage}%
-          </Progress>
-        </ProgressBar>
-      </ProgressBarContainer>
-    </SkillItem>
-  );
-};
+const skills = [
+  { logo: javaLogo, alt: 'Java', name: 'Java', level: 'Advanced' },
+  { logo: pythonLogo, alt: 'Python', name: 'Python', level: 'Advanced' },
+  { logo: cLogo, alt: 'C', name: 'C', level: 'Intermediate' },
+  { logo: jsLogo, alt: 'JavaScript', name: 'JavaScript', level: 'Advanced' },
+  { logo: reactLogo, alt: 'React', name: 'React', level: 'Advanced' },
+  { logo: htmlCssLogo, alt: 'HTML/CSS', name: 'HTML/CSS', level: 'Advanced' },
+  { logo: kotlinLogo, alt: 'Kotlin', name: 'Kotlin', level: 'Intermediate' },
+  { logo: vhdlLogo, alt: 'VHDL', name: 'VHDL', level: 'Basic' },
+];
 
 const ExperienceGrid = styled.div`
   display: grid;
@@ -277,11 +339,13 @@ const StyledExperienceItem = styled.div`
     text-align: center; /* Center the text */
   }
 
-  ${({ flipped }) => flipped && `
+  ${({ flipped }) => flipped && css`
     .front {
+      animation: ${flipExperienceAnimation} 0.6s forwards;
       transform: rotateY(180deg);
     }
     .back {
+      animation: ${flipExperienceAnimation} 0.6s forwards;
       transform: rotateY(0deg);
     }
   `}
@@ -360,96 +424,25 @@ const EducationDetails = styled.div`
   }
 `;
 
-const Timeline = styled.div`
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: left;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background-color: ${({ theme }) => theme.text};
-    left: 50%;
-    margin-left: -1px;
-  }
-`;
-
-const TimelineItem = styled.div`
-  padding: 20px 40px;
-  position: relative;
-  background-color: inherit;
-  width: 50%;
-
-  &:nth-child(odd) {
-    left: 0;
-  }
-
-  &:nth-child(even) {
-    left: 50%;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    right: -17px;
-    background-color: ${({ theme }) => theme.background};
-    border: 4px solid ${({ theme }) => theme.text};
-    top: 15px;
-    border-radius: 50%;
-    z-index: 1;
-  }
-
-  &:nth-child(even)::after {
-    left: -16px;
-  }
-`;
-
-const TimelineContent = styled.div`
-  padding: 20px 30px;
-  background-color: ${({ theme }) => theme.primary};
-  position: relative;
-  border-radius: 6px;
-  animation: ${fadeIn} 1s ease-in-out;
-
-  h3 {
-    margin-bottom: 10px;
-    font-size: 20px;
-    color: ${({ theme }) => theme.text};
-  }
-
-  p {
-    color: ${({ theme }) => theme.text};
-    font-size: 16px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 10px;
-    h3 {
-      font-size: 18px;
-    }
-    p {
-      font-size: 14px;
-    }
-  }
-`;
-
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
-  const [flippedIndex, setFlippedIndex] = useState(null);
+  const [flippedSkills, setFlippedSkills] = useState(Array(skills.length).fill(false));
+  const [flippedExperience, setFlippedExperience] = useState(Array(2).fill(false));
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
-  const handleFlip = (index) => {
-    setFlippedIndex(index === flippedIndex ? null : index);
+  const handleFlipSkills = (index) => {
+    setFlippedSkills((prevFlipped) =>
+      prevFlipped.map((flipped, i) => (i === index ? !flipped : flipped))
+    );
+  };
+
+  const handleFlipExperience = (index) => {
+    setFlippedExperience((prevFlipped) =>
+      prevFlipped.map((flipped, i) => (i === index ? !flipped : flipped))
+    );
   };
 
   return (
@@ -508,17 +501,23 @@ const App = () => {
             </p>
           </Section>
           <Section id="skills">
-            <h2>Technical Skills</h2>
-            <SkillsGrid>
-              <Skill logo={javaLogo} alt="Java" name="Java" percentage={80} />
-              <Skill logo={pythonLogo} alt="Python" name="Python" percentage={70} />
-              <Skill logo={cLogo} alt="C/C++" name="C/C++" percentage={80} />
-              <Skill logo={jsLogo} alt="JavaScript" name="JavaScript" percentage={75} />
-              <Skill logo={reactLogo} alt="React" name="React" percentage={75} />
-              <Skill logo={htmlCssLogo} alt="HTML/CSS" name="HTML/CSS" percentage={90} />
-              <Skill logo={kotlinLogo} alt="Kotlin" name="Kotlin" percentage={60} />
-              <Skill logo={vhdlLogo} alt="VHDL" name="VHDL" percentage={60} />
-            </SkillsGrid>
+            <SkillsSection theme={theme.light}>
+              <SkillsGrid>
+                {skills.map((skill, index) => (
+                  <SkillItem key={index} theme={theme.light} flipped={flippedSkills[index]} onClick={() => handleFlipSkills(index)}>
+                    <div className="front">
+                      <img src={skill.logo} alt={skill.alt} />
+                    </div>
+                    <div className="back">
+                      {skill.name}<br />{skill.level}
+                    </div>
+                  </SkillItem>
+                ))}
+                <CenterHeading theme={theme.light} onClick={() => setFlippedSkills(Array(skills.length).fill(!flippedSkills[0]))}>
+                  Technical Skills
+                </CenterHeading>
+              </SkillsGrid>
+            </SkillsSection>
           </Section>
           <Section id="experience">
             <h2>Work Experience</h2>
@@ -534,8 +533,8 @@ const App = () => {
                   'Designed and implemented advanced features for digital timesheet management with Firebase integration, achieving a 30% increase in timely submissions and reducing manual entry errors by 200%',
                 ]}
                 color="#e41c24"
-                flipped={flippedIndex === 0}
-                onClick={() => handleFlip(0)}
+                flipped={flippedExperience[0]}
+                onClick={() => handleFlipExperience(0)}
               />
               <ExperienceItem
                 logo={nowFloatsLogo}
@@ -548,36 +547,14 @@ const App = () => {
                   'Developed go-to-market and pricing strategies using insights from 10+ industry reports and competitor analysis, ensuring competitive product positioning in the market',
                 ]}
                 color="#FFB900"
-                flipped={flippedIndex === 1}
-                onClick={() => handleFlip(1)}
+                flipped={flippedExperience[1]}
+                onClick={() => handleFlipExperience(1)}
               />
             </ExperienceGrid>
           </Section>
           <Section id="projects">
             <h2>Projects</h2>
-            <Timeline>
-              <TimelineItem>
-                <TimelineContent>
-                  <h3>BudgetRoyale</h3>
-                  <p>Developed a gamified personal finance tracking web app tailored for university students, resulting in a 30% increase in user engagement within the first month. Implemented AI-driven financial advice features using React and Firebase, helping users reduce unnecessary expenses by an average of 20% per month.</p>
-                  <p>June 2024 – Present</p>
-                </TimelineContent>
-              </TimelineItem>
-              <TimelineItem>
-                <TimelineContent>
-                  <h3>Byte Bites: Recipe Recommendation App</h3>
-                  <p>Developed the frontend of a recipe recommendation app for vegetarian international students using HTML and CSS, enhancing user experience and engagement. Collaborated with the backend team to integrate the Spoonacular API, contributing to a 25% improvement in user engagement.</p>
-                  <p>Jan 2024</p>
-                </TimelineContent>
-              </TimelineItem>
-              <TimelineItem>
-                <TimelineContent>
-                  <h3>Geesespotter</h3>
-                  <p>Engineered a C++ console-based Minesweeper game with a Waterloo theme, focusing on problem-solving, algorithm efficiency, and enhancing skills in functions and dynamic memory allocation.</p>
-                  <p>Oct 2023</p>
-                </TimelineContent>
-              </TimelineItem>
-            </Timeline>
+            <Timeline />
           </Section>
           <Section id="certifications">
             <h2>Certifications</h2>
