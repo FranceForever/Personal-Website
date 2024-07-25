@@ -12,7 +12,7 @@ const TimelineLine = styled.div`
   content: '';
   position: absolute;
   width: 2px;
-  background-color: #000;
+  background-color: ${({ theme }) => theme.text};
   top: 0;
   bottom: 0;
   left: 50%;
@@ -27,7 +27,7 @@ const TimelineItem = styled.div`
     position: absolute;
     width: 20px;
     height: 20px;
-    background-color: #000;
+    background-color: ${({ theme }) => theme.text};
     border-radius: 50%;
     top: 0;
     left: 50%;
@@ -45,6 +45,7 @@ const TimelineItem = styled.div`
 
 const TimelineContent = styled.div`
   position: relative;
+  font-size: 1.1em;
   left: 30px;
 `;
 

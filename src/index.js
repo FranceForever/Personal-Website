@@ -14,6 +14,7 @@ import reactLogo from './logos/react.png';
 import htmlCssLogo from './logos/html5.png';
 import kotlinLogo from './logos/android.png';
 import vhdlLogo from './logos/microchip-solid.png';
+import uwaterlooLogo from './logos/uwaterloo.png'; // Adjust the path to your logo
 
 // Import job images
 import hdfcErgoLogo from './logos/hdfcergo_logo.jpeg';
@@ -52,23 +53,48 @@ const fadeIn = keyframes`
   }
 `;
 
-const slideUp = keyframes`
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+// const slideUp = keyframes`
+//   from {
+//     transform: translateY(50px);
+//     opacity: 0;
+//   }
+//   to {
+//     transform: translateY(0);
+//     opacity: 1;
+//   }
+// `;
+
+// const flipExperienceAnimation = keyframes`
+//   0% { transform: rotateY(0); }
+//   100% { transform: rotateY(180deg); }
+// `;
+
+const typing = keyframes`
+  from { width: 0 }
+  to { width: 14ch }
 `;
 
-const flipExperienceAnimation = keyframes`
-  0% { transform: rotateY(0); }
-  100% { transform: rotateY(180deg); }
+const blink = keyframes`
+  from, to { border-color: transparent }
+  50% { border-color: ${({ theme }) => theme.text} }
+`;
+
+const gradientAnimation = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 `;
 
 const Main = styled.main`
+  // background: linear-gradient(45deg, #0071c1, #00a2ff, #1ec5ff);
+  // background-size: 600% 600%;
+  // animation: ${gradientAnimation} 16s ease infinite;
   padding: 20px;
   text-align: center;
   @media (max-width: 768px) {
@@ -77,9 +103,11 @@ const Main = styled.main`
 `;
 
 const Section = styled.section`
-  margin: 20px 0;
+  // background: linear-gradient(45deg, red, orange, yellow);
+  // background-size: 600% 600%;
+  // animation: ${gradientAnimation} 16s ease infinite;
+  margin: 10px 0;
   padding: 20px;
-  border-bottom: 4px solid ${({ theme }) => theme.buttonBackground};
   animation: ${fadeIn} 1s ease-in-out;
   opacity: 0;
   transform: translateY(50px);
@@ -93,14 +121,14 @@ const Section = styled.section`
     `}
 
   h2 {
-    margin-bottom: 20px;
-    font-size: 30px;
+    margin-bottom: 50px;
+    font-size: 40px;
     color: ${({ theme }) => theme.text};
   }
 
   p, ul, li {
     color: ${({ theme }) => theme.text};
-    font-size: 18px;
+    font-size: 22px;
     line-height: 1.6;
     margin: 0px 70px;
     text-align: justify;
@@ -195,18 +223,20 @@ const SkillItem = styled.div`
   cursor: pointer;
 
   &:hover {
-    &::after {
-      content: 'Click to see proficiency of skill';
-      position: absolute;
-      bottom: -50px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: ${({ theme }) => theme.text};
-      color: ${({ theme }) => theme.primary};
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 0.8em;
-    }
+    ${({ flipped }) => !flipped && css`
+      &::after {
+        content: 'Click to see proficiency of skill';
+        position: absolute;
+        bottom: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${({ theme }) => theme.text};
+        color: ${({ theme }) => theme.primary};
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.8em;
+      }
+    `}
   }
 
   .front, .back {
@@ -227,8 +257,8 @@ const SkillItem = styled.div`
   }
 
   img {
-    max-width: 60%;
-    max-height: 60%;
+    max-width: 50%;
+    max-height: 50%;
   }
 
   &:nth-child(1) {
@@ -260,7 +290,7 @@ const SkillItem = styled.div`
 const skills = [
   { logo: javaLogo, alt: 'Java', name: 'Java', level: 'Advanced' },
   { logo: pythonLogo, alt: 'Python', name: 'Python', level: 'Advanced' },
-  { logo: cLogo, alt: 'C', name: 'C', level: 'Intermediate' },
+  { logo: cLogo, alt: 'C++', name: 'C++', level: 'Intermediate' },
   { logo: jsLogo, alt: 'JavaScript', name: 'JavaScript', level: 'Advanced' },
   { logo: reactLogo, alt: 'React', name: 'React', level: 'Advanced' },
   { logo: htmlCssLogo, alt: 'HTML/CSS', name: 'HTML/CSS', level: 'Advanced' },
@@ -380,10 +410,13 @@ const StyledExperienceItem = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 10px; /* Add padding for better spacing */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    overflow: hidden; /* Ensure content doesn't overflow */
 
     h3 {
       margin-bottom: 10px;
-      font-size: 30px;
+      font-size: 24px; /* Adjust font size */
       text-shadow: 0.5px 0.5px 1px rgba(255, 255, 255, 0.2); /* Add text shadow */
       padding: 5px 10px;
       border-radius: 5px;
@@ -394,11 +427,13 @@ const StyledExperienceItem = styled.div`
       text-shadow: 0.5px 0.5px 1px rgba(255, 255, 255, 0.2); /* Add text shadow */
       padding: 5px 10px;
       border-radius: 5px;
+      font-size: 16px; /* Adjust font size */
+      line-height: 1.4; /* Adjust line height */
     }
 
     ul {
       text-align: justify;
-      margin: 0px 50px;
+      margin: 0px 10px; /* Adjust margin for better spacing */
       list-style-type: none;
       padding: 0;
 
@@ -407,6 +442,8 @@ const StyledExperienceItem = styled.div`
         padding: 5px 10px;
         border-radius: 5px;
         margin-bottom: 5px; /* Space between list items */
+        font-size: 14px; /* Adjust font size */
+        line-height: 1.2; /* Adjust line height */
       }
     }
   }
@@ -448,6 +485,11 @@ const EducationDetails = styled.div`
     margin: 10px 130px; /* Ensure margin consistency */
     padding: 0; /* Reset padding */
     line-height: 1.6; /* Improve readability */
+  }
+
+  img {
+    width: 5%;
+    height: 5%;
   }
 
   li {
@@ -493,6 +535,7 @@ const App = () => {
     <ThemeProvider theme={darkMode ? theme.dark : theme.light}>
       <PageContainer>
         <Header darkMode={darkMode}>
+          <TypingContainer>Hi! I'm Armaan</TypingContainer>
           <HeaderButtonContainer>
             <HeaderButtonWrapper>
               <HeaderButton href="#about">
@@ -618,6 +661,7 @@ const App = () => {
             <h2>Education</h2>
             <EducationDetails>
               <p>
+                {/* <img src={uwaterlooLogo} alt="University of Waterloo Logo" /> */}
                 <strong>University of Waterloo</strong>
                 <br />
                 Bachelor of Applied Science in Computer Engineering
@@ -666,11 +710,13 @@ const PageContainer = styled.div`
   scroll-behavior: smooth; /* Enable smooth scrolling */
 `;
 
+const lightGradient = 'linear-gradient(45deg, #4facfe, #00f2fe, #6fe7dd)';
+const darkGradient = 'linear-gradient(45deg, #005493, #003366, #001a33)';
+
 const Header = styled.header`
-  //background-image: url(${({ darkMode }) => darkMode ? '/dark_mode_photo.jpeg' : '/light_mode_photo.png'});
-  background-image: url('/light_mode_photo.png');
-  background-size: cover;
-  background-position: center;
+  background: ${({ darkMode }) => darkMode ? darkGradient : lightGradient};
+  background-size: 600% 600%;
+  animation: ${gradientAnimation} 8s ease infinite;
   height: 100vh; /* Adjust the height to cover the entire window */
   width: 100wh; /* Adjust the width to cover the entire window */
   display: flex;
@@ -678,7 +724,7 @@ const Header = styled.header`
   align-items: center;
   text-align: center;
   position: relative; /* Make sure the position is relative to allow overlay */
-
+  
   &::before {
     content: '';
     position: absolute;
@@ -695,6 +741,23 @@ const Header = styled.header`
     position: relative;
     z-index: 2;
   }
+`;
+
+const TypingContainer = styled.div`
+  font-family: monospace;
+  font-size: 4rem;
+  width: 14ch;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 0.15em solid ${({ theme }) => theme.text};
+  animation: ${typing} 1.3s steps(14) 0.2s 1 normal both, ${blink} 0.75s step-end infinite;
+  color: white;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
 `;
 
 const HeaderButtonContainer = styled.div`
