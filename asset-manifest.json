@@ -1,8 +1,9 @@
 {
   "files": {
     "main.css": "/Personal-Website/static/css/main.7837a135.css",
-    "main.js": "/Personal-Website/static/js/main.a039003f.js",
+    "main.js": "/Personal-Website/static/js/main.c35414a9.js",
     "static/media/uwaterloo.png": "/Personal-Website/static/media/uwaterloo.e7d357af117cbf9c90be.png",
+    "static/media/profile_photo.png": "/Personal-Website/static/media/profile_photo.aa77077b4326a5f3bffd.png",
     "static/media/react.png": "/Personal-Website/static/media/react.1062c045e42a8a7faeed.png",
     "static/media/nowfloats_logo.png": "/Personal-Website/static/media/nowfloats_logo.fc986358ac170a9f6075.png",
     "static/media/java.png": "/Personal-Website/static/media/java.b23b7c469ee9132e9e6d.png",
@@ -12,10 +13,10 @@
     "static/media/python.png": "/Personal-Website/static/media/python.1085b3197065e51ea379.png",
     "index.html": "/Personal-Website/index.html",
     "main.7837a135.css.map": "/Personal-Website/static/css/main.7837a135.css.map",
-    "main.a039003f.js.map": "/Personal-Website/static/js/main.a039003f.js.map"
+    "main.c35414a9.js.map": "/Personal-Website/static/js/main.c35414a9.js.map"
   },
   "entrypoints": [
     "static/css/main.7837a135.css",
-    "static/js/main.a039003f.js"
+    "static/js/main.c35414a9.js"
   ]
 }
