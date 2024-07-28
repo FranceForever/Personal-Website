@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/Personal-Website/static/css/main.7837a135.css",
+    "main.js": "/Personal-Website/static/js/main.a039003f.js",
+    "static/media/uwaterloo.png": "/Personal-Website/static/media/uwaterloo.e7d357af117cbf9c90be.png",
+    "static/media/react.png": "/Personal-Website/static/media/react.1062c045e42a8a7faeed.png",
+    "static/media/nowfloats_logo.png": "/Personal-Website/static/media/nowfloats_logo.fc986358ac170a9f6075.png",
+    "static/media/java.png": "/Personal-Website/static/media/java.b23b7c469ee9132e9e6d.png",
+    "static/media/hdfcergo_logo.jpeg": "/Personal-Website/static/media/hdfcergo_logo.da1be8041a5d2690385a.jpeg",
+    "static/media/c-solid.png": "/Personal-Website/static/media/c-solid.31ed05150ca8135786a2.png",
+    "static/media/android.png": "/Personal-Website/static/media/android.a9011b3f53d1938a5cdb.png",
+    "static/media/python.png": "/Personal-Website/static/media/python.1085b3197065e51ea379.png",
+    "index.html": "/Personal-Website/index.html",
+    "main.7837a135.css.map": "/Personal-Website/static/css/main.7837a135.css.map",
+    "main.a039003f.js.map": "/Personal-Website/static/js/main.a039003f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7837a135.css",
+    "static/js/main.a039003f.js"
+  ]
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import styled, { ThemeProvider, keyframes, css } from 'styled-components';
@@ -15,6 +15,7 @@ import htmlCssLogo from './logos/html5.png';
 import kotlinLogo from './logos/android.png';
 import vhdlLogo from './logos/microchip-solid.png';
 import uwaterlooLogo from './logos/uwaterloo.png'; // Adjust the path to your logo
+import profilePhoto from './logos/profile_photo.png';
 
 // Import job images
 import hdfcErgoLogo from './logos/hdfcergo_logo.jpeg';
@@ -22,27 +23,9 @@ import nowFloatsLogo from './logos/nowfloats_logo.png';
 
 // Import FontAwesome Logos
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faPhone, faCopyright } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faPhone, faCopyright, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faUser, faLaptopCode, faBriefcase, faProjectDiagram, faCertificate, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
-
-// Define the theme colors
-const theme = {
-  light: {
-    background: '#ffffff', // White
-    primary: '#f0f0f0', // Light gray
-    text: '#000000', // Black for text
-    buttonBackground: '#4c9ed9', // Darker light blue for buttons
-    buttonHover: '#357bb5', // Darker light blue for button hover
-  },
-  dark: {
-    background: '#181818', // Dark gray background
-    primary: '#282828', // Slightly lighter dark background
-    text: '#ffffff', // White for text
-    buttonBackground: '#1e3a5f', // Dark blue for buttons
-    buttonHover: '#152a45', // Darker dark blue for button hover
-  },
-};
 
 const fadeIn = keyframes`
   from {
@@ -53,25 +36,9 @@ const fadeIn = keyframes`
   }
 `;
 
-// const slideUp = keyframes`
-//   from {
-//     transform: translateY(50px);
-//     opacity: 0;
-//   }
-//   to {
-//     transform: translateY(0);
-//     opacity: 1;
-//   }
-// `;
-
-// const flipExperienceAnimation = keyframes`
-//   0% { transform: rotateY(0); }
-//   100% { transform: rotateY(180deg); }
-// `;
-
 const typing = keyframes`
   from { width: 0 }
-  to { width: 14ch }
+  to { width: 100ch }
 `;
 
 const blink = keyframes`
@@ -91,10 +58,16 @@ const gradientAnimation = keyframes`
   }
 `;
 
+const ProfileImage = styled.img`
+  width: 400px; /* Adjust size as needed */
+  height: 400px; /* Adjust size as needed */
+  border-radius: 50%;
+  border: 3px solid white;
+  margin-bottom: 50px;
+  z-index: 3;
+`;
+
 const Main = styled.main`
-  // background: linear-gradient(45deg, #0071c1, #00a2ff, #1ec5ff);
-  // background-size: 600% 600%;
-  // animation: ${gradientAnimation} 16s ease infinite;
   padding: 20px;
   text-align: center;
   @media (max-width: 768px) {
@@ -103,9 +76,6 @@ const Main = styled.main`
 `;
 
 const Section = styled.section`
-  // background: linear-gradient(45deg, red, orange, yellow);
-  // background-size: 600% 600%;
-  // animation: ${gradientAnimation} 16s ease infinite;
   margin: 10px 0;
   padding: 20px;
   animation: ${fadeIn} 1s ease-in-out;
@@ -169,12 +139,13 @@ const CenterHeading = styled.div`
   transform: translate(-50%, -50%);
   background: ${({ theme }) => theme.buttonBackground};
   border-radius: 50%;
+  border: 2px dotted white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 1.5em;
+  font-size: 1.3em;
   font-weight: bold;
   color: ${({ theme }) => theme.text};
   cursor: pointer;
@@ -202,6 +173,7 @@ const SkillsGrid = styled.div`
   width: 500px; /* Increased width for more spacing */
   height: 500px; /* Increased height for more spacing */
   position: absolute;
+  align-content: center;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -210,8 +182,9 @@ const SkillsGrid = styled.div`
 const SkillItem = styled.div`
   width: 100px;
   height: 100px;
-  background-color: ${({ theme }) => theme.buttonBackground};
+  background-color: ${({ theme }) => theme.text};
   border-radius: 50%;
+  border: 2px solid black;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -251,8 +224,8 @@ const SkillItem = styled.div`
   }
 
   .back {
-    background-color: ${({ theme }) => theme.buttonHover};
-    color: ${({ theme }) => theme.primary};
+    background-color: lightgrey;
+    color: black;
     transform: rotateY(180deg);
   }
 
@@ -305,9 +278,9 @@ const ExperienceGrid = styled.div`
   text-align: left;
 `;
 
-const ExperienceItem = ({ logo, alt, title, company, duration, responsibilities, color, flipped, onClick }) => {
+const ExperienceItem = ({ logo, alt, title, company, duration, responsibilities, color, flipped, onClick, textColor, cardType }) => {
   return (
-    <StyledExperienceItem color={color} flipped={flipped} onClick={onClick}>
+    <StyledExperienceItem color={color} flipped={flipped} onClick={onClick} textColor={textColor} cardType={cardType}>
       <div className="front">
         <LogoContainer>
           <img src={logo} alt={alt} />
@@ -347,6 +320,7 @@ const StyledExperienceItem = styled.div`
   background-color: ${({ color }) => color};
   padding: 20px;
   border-radius: 10px;
+  border: 2px solid white;
   animation: ${fadeIn} 1s ease-in-out;
   transition: transform 0.3s, filter 0.3s;
   perspective: 1000px; /* Perspective for 3D effect */
@@ -356,6 +330,17 @@ const StyledExperienceItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  ${({ cardType }) =>
+    cardType === 'nowfloats' &&
+    css`
+      color: black; /* Apply black text color for nowfloats card */
+      .back h3,
+      .back p,
+      .back li {
+        color: black; /* Apply black text color for h3, p, ul inside back class */
+      }
+    `}
 
   &:hover ${HoverPrompt} {
     visibility: visible;
@@ -376,6 +361,7 @@ const StyledExperienceItem = styled.div`
     position: absolute;
     transition: transform 0.6s, filter 0.3s;
     text-align: center; /* Center the text */
+    color: ${({ textColor }) => textColor};
   }
 
   .front {
@@ -403,7 +389,7 @@ const StyledExperienceItem = styled.div`
 
   .back {
     background-color: ${({ color }) => color}; /* Same background color as the front */
-    color: ${({ theme }) => theme.text};
+    color: ${({ textColor }) => textColor};
     transform: rotateY(180deg);
     text-align: center; /* Center the text */
     display: flex;
@@ -503,223 +489,59 @@ const EducationDetails = styled.div`
   }
 `;
 
-const App = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [flippedSkills, setFlippedSkills] = useState(Array(skills.length).fill(false));
-  const [flippedExperience, setFlippedExperience] = useState(Array(2).fill(false));
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
-  const handleFlipSkills = (index) => {
-    setFlippedSkills((prevFlipped) =>
-      prevFlipped.map((flipped, i) => (i === index ? !flipped : flipped))
-    );
-  };
-
-  const handleFlipExperience = (index) => {
-    setFlippedExperience((prevFlipped) =>
-      prevFlipped.map((flipped, i) => (i === index ? !flipped : flipped))
-    );
-  };
-
-  const { ref: aboutRef, inView: aboutInView } = useInView({ triggerOnce: true });
-  const { ref: skillsRef, inView: skillsInView } = useInView({ triggerOnce: true });
-  const { ref: experienceRef, inView: experienceInView } = useInView({ triggerOnce: true });
-  const { ref: projectsRef, inView: projectsInView } = useInView({ triggerOnce: true });
-  const { ref: certificationsRef, inView: certificationsInView } = useInView({ triggerOnce: true });
-  const { ref: educationRef, inView: educationInView } = useInView({ triggerOnce: true });
-
-  return (
-    <ThemeProvider theme={darkMode ? theme.dark : theme.light}>
-      <PageContainer>
-        <Header darkMode={darkMode}>
-          <TypingContainer>Hi! I'm Armaan</TypingContainer>
-          <HeaderButtonContainer>
-            <HeaderButtonWrapper>
-              <HeaderButton href="#about">
-                <FontAwesomeIcon icon={faUser} size="2x" />
-              </HeaderButton>
-              <TooltipLeft>About</TooltipLeft>
-            </HeaderButtonWrapper>
-            <HeaderButtonWrapper>
-              <HeaderButton href="#skills">
-                <FontAwesomeIcon icon={faLaptopCode} size="2x" />
-              </HeaderButton>
-              <TooltipLeft>Skills</TooltipLeft>
-            </HeaderButtonWrapper>
-            <HeaderButtonWrapper>
-              <HeaderButton href="#experience">
-                <FontAwesomeIcon icon={faBriefcase} size="2x" />
-              </HeaderButton>
-              <TooltipLeft>Experience</TooltipLeft>
-            </HeaderButtonWrapper>
-          </HeaderButtonContainer>
-          <ToggleSwitch onClick={toggleDarkMode}>
-            {darkMode ? 'Light Mode' : 'Dark Mode'}
-          </ToggleSwitch>
-          <HeaderButtonContainer right>
-            <HeaderButtonWrapper>
-              <HeaderButton href="#projects">
-                <FontAwesomeIcon icon={faProjectDiagram} size="2x" />
-              </HeaderButton>
-              <TooltipRight>Projects</TooltipRight>
-            </HeaderButtonWrapper>
-            <HeaderButtonWrapper>
-              <HeaderButton href="#certifications">
-                <FontAwesomeIcon icon={faCertificate} size="2x" />
-              </HeaderButton>
-              <TooltipRight>Certifications</TooltipRight>
-            </HeaderButtonWrapper>
-            <HeaderButtonWrapper>
-              <HeaderButton href="#education">
-                <FontAwesomeIcon icon={faGraduationCap} size="2x" />
-              </HeaderButton>
-              <TooltipRight>Education</TooltipRight>
-            </HeaderButtonWrapper>
-          </HeaderButtonContainer>
-        </Header>
-        <Main>
-          <AboutSection id="about" ref={aboutRef} isVisible={aboutInView}>
-            <h2>About Me</h2>
-            <p>
-              Hello! I'm Armaan Ghosh, a first-year Computer Engineering student at the University of Waterloo. I have a deep passion for technology and a keen interest in exploring the latest advancements in the field. My journey in tech has equipped me with a diverse skill set, including various programming languages and frameworks. I'm always eager to learn and grow, both academically and personally. Outside of academics, I enjoy taking on leadership roles and contributing to the community. I look forward to leveraging my skills and experiences to drive innovation and make meaningful contributions to the world of engineering.
-            </p>
-          </AboutSection>
-          <Section id="skills" ref={skillsRef} isVisible={skillsInView}>
-            <SkillsSection theme={theme.light}>
-              <SkillsGrid>
-                {skills.map((skill, index) => (
-                  <SkillItem key={index} theme={theme.light} flipped={flippedSkills[index]} onClick={() => handleFlipSkills(index)}>
-                    <div className="front">
-                      <img src={skill.logo} alt={skill.alt} />
-                    </div>
-                    <div className="back">
-                      {skill.name}<br />{skill.level}
-                    </div>
-                  </SkillItem>
-                ))}
-                <CenterHeading theme={theme.light} onClick={() => setFlippedSkills(Array(skills.length).fill(!flippedSkills[0]))}>
-                  Technical Skills
-                </CenterHeading>
-              </SkillsGrid>
-            </SkillsSection>
-          </Section>
-          <Section id="experience" ref={experienceRef} isVisible={experienceInView}>
-            <h2>Work Experience</h2>
-            <ExperienceGrid>
-              <ExperienceItem
-                logo={hdfcErgoLogo}
-                alt="HDFC Ergo"
-                title="Frontend Engineer"
-                company="HDFC Ergo General Insurance"
-                duration="May 2024 – Aug 2024, Mumbai, India"
-                responsibilities={[
-                  'Developed and optimized user interfaces for the 1UP timesheet app using JavaScript and React, improving usability for over 50,000 customers and boosting user engagement by 35%',
-                  'Designed and implemented advanced features for digital timesheet management with Firebase integration, achieving a 30% increase in timely submissions and reducing manual entry errors by 200%',
-                ]}
-                color="#e41c24"
-                flipped={flippedExperience[0]}
-                onClick={() => handleFlipExperience(0)}
-              />
-              <ExperienceItem
-                logo={nowFloatsLogo}
-                alt="NowFloats"
-                title="Product Manager"
-                company="NowFloats Technologies"
-                duration="May 2024 – Aug 2024, Remote"
-                responsibilities={[
-                  'Conducted market research for a new marketing automation product targeting MSMEs, identifying 5 key customer segments and performing SWOT analysis',
-                  'Developed go-to-market and pricing strategies using insights from 10+ industry reports and competitor analysis, ensuring competitive product positioning in the market',
-                ]}
-                color="#FFB900"
-                flipped={flippedExperience[1]}
-                onClick={() => handleFlipExperience(1)}
-              />
-            </ExperienceGrid>
-          </Section>
-          <Section id="projects" ref={projectsRef} isVisible={projectsInView}>
-            <h2>Projects</h2>
-            <Timeline />
-          </Section>
-          <Section id="certifications" ref={certificationsRef} isVisible={certificationsInView}>
-            <h2>Certifications</h2>
-            <CertificationsList>
-              <li>
-                <strong>IBM AI Developer Professional Certificate:</strong> IBM, Coursera - Acquired expertise in software engineering, AI, generative AI, prompt engineering, HTML, JavaScript, and Python through 20+ hands-on labs and comprehensive coursework.
-              </li>
-              <li>
-                <strong>Meta Frontend Developer Professional Certificate:</strong> Meta, Coursera - Mastered HTML, CSS, JavaScript, and React, creating 3 web applications and 5 projects, including responsive designs and dynamic UIs, demonstrating practical skills.
-              </li>
-              <li>
-                <strong>Algorithms, Part I:</strong> Princeton University, Coursera - Gained in-depth knowledge of algorithms with a focus on data structures and optimization, enhancing problem-solving skills by 20%, and completed comprehensive coursework on sorting, searching, and graph algorithms, improving algorithmic thinking by 25%.
-              </li>
-            </CertificationsList>
-          </Section>
-          <Section id="education" ref={educationRef} isVisible={educationInView}>
-            <h2>Education</h2>
-            <EducationDetails>
-              <p>
-                {/* <img src={uwaterlooLogo} alt="University of Waterloo Logo" /> */}
-                <strong>University of Waterloo</strong>
-                <br />
-                Bachelor of Applied Science in Computer Engineering
-                <br />
-                Expected to graduate in 2028
-              </p>
-              <ul>
-                <li>Courses: Algorithms and Data Structures (C++), Digital Circuits and Systems (VHDL), Object-Oriented Programming (C++), Discrete Math and Logic, Calculus II</li>
-                <li>Involvements: Orientation Front-Line Leader, Orientation Director, ECE Society Web Developer, EngSoc First Year Conference, Waterloo Engineering Competition IT, Mentorship and Photography Director</li>
-              </ul>
-            </EducationDetails>
-          </Section>
-        </Main>
-        <Footer>
-          <p>
-            <FontAwesomeIcon icon={faCopyright} /> 2024 Armaan Ghosh
-          </p>
-          <div className="contact-info">
-            <a href="mailto:a65ghosh@uwaterloo.ca">
-              <FontAwesomeIcon icon={faEnvelope} /> a65ghosh@uwaterloo.ca
-            </a>
-            <span>
-              <FontAwesomeIcon icon={faPhone} /> +1 548-922-0973
-            </span>
-          </div>
-          <div>
-            <a href="https://www.linkedin.com/in/armaan-ghosh-741178211/" target="_blank" rel="noopener noreferrer">
-              <FontAwesomeIcon icon={faLinkedin} />
-            </a>
-            <a href="https://github.com/FranceForever" target="_blank" rel="noopener noreferrer">
-              <FontAwesomeIcon icon={faGithub} />
-            </a>
-          </div>
-        </Footer>
-      </PageContainer>
-    </ThemeProvider>
-  );
-};
-
-const PageContainer = styled.div`
-  background-color: ${({ theme }) => theme.background};
+const ScrollToTopButton = styled.button`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: ${({ theme }) => theme.buttonBackground};
   color: ${({ theme }) => theme.text};
-  min-height: 100vh;
-  animation: ${fadeIn} 1s ease-in-out;
-  text-align: center;
-  scroll-behavior: smooth; /* Enable smooth scrolling */
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    background-color: ${({ theme }) => theme.buttonHover};
+  }
 `;
 
-const lightGradient = 'linear-gradient(45deg, #4facfe, #00f2fe, #6fe7dd)';
-const darkGradient = 'linear-gradient(45deg, #005493, #003366, #001a33)';
+const theme = {
+  dark: {
+    background: '#0D47A1', // Dark Blue
+    primary: '#1A237E', // Deep Blue
+    text: '#FFFFFF', // White
+    buttonBackground: '#42A5F5', // Light Blue
+    buttonHover: '#1976D2', // Medium Blue
+  },
+};
+
+const TypingContainer = styled.div`
+  font-family: monospace;
+  font-size: 2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 0.15em solid ${({ theme }) => theme.text};
+  animation: ${typing} 6s steps(100) 1s normal both, ${blink} 0.75s step-end infinite;
+  color: white;
+  text-align: center;
+  z-index: 3;
+  margin-bottom: 20px; /* Add margin to separate from the image */
+`;
 
 const Header = styled.header`
-  background: ${({ darkMode }) => darkMode ? darkGradient : lightGradient};
+  background: linear-gradient(45deg, #0D47A1, #1A237E, #42A5F5);
   background-size: 600% 600%;
   animation: ${gradientAnimation} 8s ease infinite;
   height: 100vh; /* Adjust the height to cover the entire window */
   width: 100wh; /* Adjust the width to cover the entire window */
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -732,7 +554,7 @@ const Header = styled.header`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: ${({ darkMode }) => darkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.2)'}; /* Adjust transparency based on mode */
+    background-color: rgba(0, 0, 0, 0.3); /* Adjust transparency */
     z-index: 1;
   }
 
@@ -741,23 +563,6 @@ const Header = styled.header`
     position: relative;
     z-index: 2;
   }
-`;
-
-const TypingContainer = styled.div`
-  font-family: monospace;
-  font-size: 4rem;
-  width: 14ch;
-  white-space: nowrap;
-  overflow: hidden;
-  border-right: 0.15em solid ${({ theme }) => theme.text};
-  animation: ${typing} 1.3s steps(14) 0.2s 1 normal both, ${blink} 0.75s step-end infinite;
-  color: white;
-  text-align: center;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
 `;
 
 const HeaderButtonContainer = styled.div`
@@ -858,23 +663,6 @@ const HeaderButtonWrapper = styled.div`
   }
 `;
 
-const ToggleSwitch = styled.button`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  background-color: ${({ theme }) => theme.buttonBackground}; /* Use theme button background color */
-  color: ${({ theme }) => theme.text}; /* Text color */
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.buttonHover}; /* Use theme button hover color */
-  }
-`;
-
 const Footer = styled.footer`
   padding: 20px;
   background-color: ${({ theme }) => theme.primary};
@@ -907,6 +695,231 @@ const Footer = styled.footer`
     margin-top: 10px;
     margin-bottom: 10px;
   }
+`;
+
+const App = () => {
+  const [flippedSkills, setFlippedSkills] = useState(Array(skills.length).fill(false));
+  const [flippedExperience, setFlippedExperience] = useState(Array(2).fill(false));
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+  const handleFlipSkills = (index) => {
+    setFlippedSkills((prevFlipped) =>
+      prevFlipped.map((flipped, i) => (i === index ? !flipped : flipped))
+    );
+  };
+
+  const handleFlipExperience = (index) => {
+    setFlippedExperience((prevFlipped) =>
+      prevFlipped.map((flipped, i) => (i === index ? !flipped : flipped))
+    );
+  };
+
+  const { ref: aboutRef, inView: aboutInView } = useInView({ triggerOnce: true });
+  const { ref: skillsRef, inView: skillsInView } = useInView({ triggerOnce: true });
+  const { ref: experienceRef, inView: experienceInView } = useInView({ triggerOnce: true });
+  const { ref: projectsRef, inView: projectsInView } = useInView({ triggerOnce: true });
+  const { ref: certificationsRef, inView: certificationsInView } = useInView({ triggerOnce: true });
+  const { ref: educationRef, inView: educationInView } = useInView({ triggerOnce: true });
+
+  const handleScroll = () => {
+    if (window.scrollY > window.innerHeight) {
+      setShowScrollToTop(true);
+    } else {
+      setShowScrollToTop(false);
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  return (
+    <ThemeProvider theme={theme.dark}>
+      <PageContainer>
+        <Header>
+          <ProfileImage src={profilePhoto} alt="Armaan Ghosh" />
+          <TypingContainer>Hi! I'm <h1>Armaan,</h1> a Computer Engineering student <br />at the <u>University of Waterloo</u></TypingContainer>
+          <HeaderButtonContainer>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#about">
+                <FontAwesomeIcon icon={faUser} size="2x" />
+              </HeaderButton>
+              <TooltipLeft>About</TooltipLeft>
+            </HeaderButtonWrapper>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#skills">
+                <FontAwesomeIcon icon={faLaptopCode} size="2x" />
+              </HeaderButton>
+              <TooltipLeft>Skills</TooltipLeft>
+            </HeaderButtonWrapper>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#experience">
+                <FontAwesomeIcon icon={faBriefcase} size="2x" />
+              </HeaderButton>
+              <TooltipLeft>Experience</TooltipLeft>
+            </HeaderButtonWrapper>
+          </HeaderButtonContainer>
+          <HeaderButtonContainer right>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#projects">
+                <FontAwesomeIcon icon={faProjectDiagram} size="2x" />
+              </HeaderButton>
+              <TooltipRight>Projects</TooltipRight>
+            </HeaderButtonWrapper>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#certifications">
+                <FontAwesomeIcon icon={faCertificate} size="2x" />
+              </HeaderButton>
+              <TooltipRight>Certifications</TooltipRight>
+            </HeaderButtonWrapper>
+            <HeaderButtonWrapper>
+              <HeaderButton href="#education">
+                <FontAwesomeIcon icon={faGraduationCap} size="2x" />
+              </HeaderButton>
+              <TooltipRight>Education</TooltipRight>
+            </HeaderButtonWrapper>
+          </HeaderButtonContainer>
+        </Header>
+        <Main>
+          <AboutSection id="about" ref={aboutRef} isVisible={aboutInView}>
+            <h2>About Me</h2>
+            <p>
+              Hello! I'm Armaan Ghosh, a first-year Computer Engineering student at the University of Waterloo. I have a deep passion for technology and a keen interest in exploring the latest advancements in the field. My journey in tech has equipped me with a diverse skill set, including various programming languages and frameworks. I'm always eager to learn and grow, both academically and personally. Outside of academics, I enjoy taking on leadership roles and contributing to the community. I look forward to leveraging my skills and experiences to drive innovation and make meaningful contributions to the world of engineering.
+            </p>
+          </AboutSection>
+          <Section id="skills" ref={skillsRef} isVisible={skillsInView}>
+            <SkillsSection theme={theme.dark}>
+              <SkillsGrid>
+                {skills.map((skill, index) => (
+                  <SkillItem key={index} theme={theme.dark} flipped={flippedSkills[index]} onClick={() => handleFlipSkills(index)}>
+                    <div className="front">
+                      <img src={skill.logo} alt={skill.alt} />
+                    </div>
+                    <div className="back">
+                      {skill.name}<br />{skill.level}
+                    </div>
+                  </SkillItem>
+                ))}
+                <CenterHeading theme={theme.dark} onClick={() => setFlippedSkills(Array(skills.length).fill(!flippedSkills[0]))}>
+                  Technical Skills
+                </CenterHeading>
+              </SkillsGrid>
+            </SkillsSection>
+          </Section>
+          <Section id="experience" ref={experienceRef} isVisible={experienceInView}>
+            <h2>Work Experience</h2>
+            <ExperienceGrid>
+              <ExperienceItem
+                logo={hdfcErgoLogo}
+                alt="HDFC Ergo"
+                title="Frontend Engineer"
+                company="HDFC Ergo General Insurance"
+                duration="May 2024 – Aug 2024, Mumbai, India"
+                responsibilities={[
+                  'Developed and optimized user interfaces for the 1UP timesheet app using JavaScript and React, improving usability for over 50,000 customers and boosting user engagement by 35%',
+                  'Designed and implemented advanced features for digital timesheet management with Firebase integration, achieving a 30% increase in timely submissions and reducing manual entry errors by 200%',
+                ]}
+                color="#e41c24"
+                flipped={flippedExperience[0]}
+                onClick={() => handleFlipExperience(0)}
+                textColor="white" // Text color for HDFC
+              />          
+              <ExperienceItem
+                logo={nowFloatsLogo}
+                alt="NowFloats"
+                title="Product Manager"
+                company="NowFloats Technologies"
+                duration="May 2024 – Aug 2024, Remote"
+                responsibilities={[
+                  'Conducted market research for a new marketing automation product targeting MSMEs, identifying 5 key customer segments and performing SWOT analysis',
+                  'Developed go-to-market and pricing strategies using insights from 10+ industry reports and competitor analysis, ensuring competitive product positioning in the market',
+                ]}
+                color="#FFB900"
+                flipped={flippedExperience[1]}
+                onClick={() => handleFlipExperience(1)}
+                textColor="black" // Text color for NowFloats
+                cardType="nowfloats" // Specify the card type
+              />
+            </ExperienceGrid>
+          </Section>
+          <Section id="projects" ref={projectsRef} isVisible={projectsInView}>
+            <h2>Projects</h2>
+            <Timeline />
+          </Section>
+          <Section id="certifications" ref={certificationsRef} isVisible={certificationsInView}>
+            <h2>Certifications</h2>
+            <CertificationsList>
+              <li>
+                <strong>IBM AI Developer Professional Certificate:</strong> IBM, Coursera - Acquired expertise in software engineering, AI, generative AI, prompt engineering, HTML, JavaScript, and Python through 20+ hands-on labs and comprehensive coursework.
+              </li>
+              <li>
+                <strong>Meta Frontend Developer Professional Certificate:</strong> Meta, Coursera - Mastered HTML, CSS, JavaScript, and React, creating 3 web applications and 5 projects, including responsive designs and dynamic UIs, demonstrating practical skills.
+              </li>
+              <li>
+                <strong>Algorithms, Part I:</strong> Princeton University, Coursera - Gained in-depth knowledge of algorithms with a focus on data structures and optimization, enhancing problem-solving skills by 20%, and completed comprehensive coursework on sorting, searching, and graph algorithms, improving algorithmic thinking by 25%.
+              </li>
+            </CertificationsList>
+          </Section>
+          <Section id="education" ref={educationRef} isVisible={educationInView}>
+            <h2>Education</h2>
+            <EducationDetails>
+              <p>
+                <strong>University of Waterloo</strong>
+                <br />
+                Bachelor of Applied Science in Computer Engineering
+                <br />
+                Expected to graduate in 2028
+              </p>
+              <ul>
+                <li>Courses: Algorithms and Data Structures (C++), Digital Circuits and Systems (VHDL), Object-Oriented Programming (C++), Discrete Math and Logic, Calculus II</li>
+                <li>Involvements: Orientation Front-Line Leader, Orientation Director, ECE Society Web Developer, EngSoc First Year Conference, Waterloo Engineering Competition IT, Mentorship and Photography Director</li>
+              </ul>
+            </EducationDetails>
+          </Section>
+        </Main>
+        <Footer>
+          <p>
+            <FontAwesomeIcon icon={faCopyright} /> 2024 Armaan Ghosh
+          </p>
+          <div className="contact-info">
+            <a href="mailto:a65ghosh@uwaterloo.ca">
+              <FontAwesomeIcon icon={faEnvelope} /> a65ghosh@uwaterloo.ca
+            </a>
+            <span>
+              <FontAwesomeIcon icon={faPhone} /> +1 548-922-0973
+            </span>
+          </div>
+          <div>
+            <a href="https://www.linkedin.com/in/armaan-ghosh-741178211/" target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faLinkedin} />
+            </a>
+            <a href="https://github.com/FranceForever" target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faGithub} />
+            </a>
+          </div>
+        </Footer>
+        <ScrollToTopButton isVisible={showScrollToTop} onClick={scrollToTop}>
+          <FontAwesomeIcon icon={faArrowUp} />
+        </ScrollToTopButton>
+      </PageContainer>
+    </ThemeProvider>
+  );
+};
+
+const PageContainer = styled.div`
+  background-color: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.text};
+  min-height: 100vh;
+  animation: ${fadeIn} 1s ease-in-out;
+  text-align: center;
+  scroll-behavior: smooth; /* Enable smooth scrolling */
 `;
 
 ReactDOM.render(<App />, document.getElementById('root'));
